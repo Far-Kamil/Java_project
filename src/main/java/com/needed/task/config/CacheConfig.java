@@ -1,9 +1,9 @@
 package com.needed.task.config;
-import java.util.Arrays;
+import java.util.List;
 
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.cache.support.SimpleCacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,10 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CacheConfig {
     @Bean
-    public org.springframework.cache.CacheManager cacheManager() {
-        SimpleCacheManager scm = new SimpleCacheManager();
-        scm.setCaches(Arrays.asList(new ConcurrentMapCache("alerts"), 
-        new ConcurrentMapCache("alert")));
-        return scm;
+    public CacheManager cacheManager() {
+        ConcurrentMapCacheManager cacheManager= new ConcurrentMapCacheManager();
+        cacheManager.setCacheNames(List.of(
+            "alerts",
+            "alertByStatus",
+            "alertByBus"
+        ));
+        return cacheManager;
     }
 }
