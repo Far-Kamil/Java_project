@@ -1,0 +1,16 @@
+package com.needed.task.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+     @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        // Going from root URL to index.html
+        registry.addViewController("/").setViewName("forward:/index.html");
+        registry.addViewController("/alerts").setViewName("forward:/index.html");
+        registry.addViewController("/alerts/**").setViewName("forward:/index.html");
+    }
+}

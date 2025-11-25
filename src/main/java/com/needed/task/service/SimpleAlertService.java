@@ -37,6 +37,9 @@ public class SimpleAlertService implements AlertService {
     @Override
     public Optional <Alert> findById(Long id)
     {
+        if (id == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
+        }
         return alertRepository.findById(id);
     }
 
@@ -54,6 +57,9 @@ public class SimpleAlertService implements AlertService {
     @Override
     public Alert updateStatus(Long alertId, StatusType statusType)
     {
+         if (alertId == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
+        }
         Alert alert= alertRepository.findById(alertId)
         .orElseThrow(()->new AlertNotFoundException(alertId));
         alert.setStatus(statusType);
@@ -61,8 +67,34 @@ public class SimpleAlertService implements AlertService {
     }
 
     @Override
+    public Alert assignToUser(Long alertId, Long userId) {
+         if (alertId == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
+        }
+        Alert alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new AlertNotFoundException(alertId));
+        alert.setAssignedToUserId(userId);
+        alert.setStatus(StatusType.IN_PROGRESS);
+        return alertRepository.save(alert);
+    }
+
+    @Override
     public void deleteById(Long id)
-    {
+    {   
+         if (id == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
+    }
         alertRepository.deleteById(id);
+    }
+
+   @Override
+    public Alert addFileToAlert(Long alertId, String filePath) {
+         if (alertId == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
+        }
+        Alert alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new AlertNotFoundException(alertId));
+        alert.setImgPath(filePath);
+        return alertRepository.save(alert);
     }
 }

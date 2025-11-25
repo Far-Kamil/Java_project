@@ -45,6 +45,9 @@ public class Alert {
     private String description;
     @Enumerated(EnumType.STRING)
     private StatusType status;
+    @Column(name = "assigned_to_user_id")
+    private Long assignedToUserId;
+    String imgPath;
     private List <String> photoUrls;
     private User assignedTo;
 

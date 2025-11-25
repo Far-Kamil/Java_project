@@ -16,7 +16,8 @@ public class CacheConfig {
         cacheManager.setCacheNames(List.of(
             "alerts",
             "alertByStatus",
-            "alertByBus"
+            "alertByBus",
+            "alertByUser"
         ));
         return cacheManager;
     }

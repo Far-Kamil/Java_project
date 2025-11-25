@@ -11,4 +11,5 @@ public interface AlertRepository
     
     List<Alert> findByStatus(StatusType status);
     List<Alert> findByBusId(Long busId);
+    List<Alert> findByAssignedToUserId(Long userId);
 }

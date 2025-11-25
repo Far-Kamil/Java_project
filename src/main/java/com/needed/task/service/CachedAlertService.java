@@ -14,6 +14,8 @@ import com.needed.task.exception.AlertNotFoundException;
 import com.needed.task.model.Alert;
 import com.needed.task.repository.AlertRepository;
 
+import jakarta.validation.constraints.NotNull;
+
 
 
 
@@ -44,8 +46,11 @@ public class CachedAlertService implements AlertService{
 
     @Override 
     @Transactional(readOnly = true)
-    public Optional<Alert> findById(Long id) 
+    public Optional<Alert> findById(@NotNull Long id) 
     {
+        if (id == null) {
+    throw new IllegalArgumentException("ID алерта не может быть null");
+        }
         return alertRepository.findById(id);
     }
 
@@ -53,7 +58,8 @@ public class CachedAlertService implements AlertService{
     @Caching(evict = {
         @CacheEvict(value = "alerts", allEntries = true),
         @CacheEvict(value = "alertsByStatus", allEntries = true),
-        @CacheEvict(value = "alertsByBus", allEntries = true)
+        @CacheEvict(value = "alertsByBus", allEntries = true),
+        @CacheEvict(value = "alertByUser", allEntries = true)
     })
     public Alert create(Alert alert) 
     {
@@ -72,13 +78,35 @@ public class CachedAlertService implements AlertService{
     @Caching(evict = {
         @CacheEvict(value = "alerts", allEntries = true),
         @CacheEvict(value = "alertsByStatus", allEntries = true),
-        @CacheEvict(value = "alertsByBus", allEntries = true)
+        @CacheEvict(value = "alertsByBus", allEntries = true),
+        @CacheEvict(value = "alertByUser", allEntries = true)        
     })
     public Alert updateStatus(Long alertId, StatusType newStatus) 
     {
+        if (alertId == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
+        }
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException(alertId));
         alert.setStatus(newStatus);
+        return alertRepository.save(alert);
+    }
+
+     @Override
+    @Caching(evict = {
+        @CacheEvict(value = "alerts", allEntries = true),
+        @CacheEvict(value = "alertsByStatus", allEntries = true),
+        @CacheEvict(value = "alertsByBus", allEntries = true),
+        @CacheEvict(value = "alertsByUser", allEntries = true)
+    })
+    public Alert assignToUser(Long alertId, Long userId) {
+        if (alertId == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
+        }
+        Alert alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new AlertNotFoundException(alertId));
+        alert.setAssignedToUserId(userId);
+        alert.setStatus(StatusType.IN_PROGRESS);
         return alertRepository.save(alert);
     }
 
@@ -86,14 +114,14 @@ public class CachedAlertService implements AlertService{
     @Caching(evict = {
         @CacheEvict(value = "alerts", allEntries = true),
         @CacheEvict(value = "alertsByStatus", allEntries = true),
-        @CacheEvict(value = "alertsByBus", allEntries = true)
+        @CacheEvict(value = "alertsByBus", allEntries = true),
+        @CacheEvict(value = "alertByUser", allEntries = true)
     })
     public void deleteById(Long id) 
     {
-        if (!alertRepository.existsById(id)) 
-        {
-            throw new AlertNotFoundException(id);
-        }
+        if (id == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
+    }
         alertRepository.deleteById(id);
     }
 
@@ -105,14 +133,40 @@ public class CachedAlertService implements AlertService{
         return alertRepository.findByBusId(busId);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(value = "alertsByUser", key = "#userId")
+    public List<Alert> findByAssignedToUserId(Long userId) {
+        return alertRepository.findByAssignedToUserId(userId);
+    }
+
+
     //Method for forced cache flushing
      @Caching(evict = {
         @CacheEvict(value = "alerts", allEntries = true),
         @CacheEvict(value = "alertsByStatus", allEntries = true),
-        @CacheEvict(value = "alertsByBus", allEntries = true)
+        @CacheEvict(value = "alertsByBus", allEntries = true),
+        @CacheEvict(value = "alertByUser", allEntries = true)
     })
     public void clearAllCache() 
-    {
-        //Method for clearing cache only
+    {}
+
+     @Override
+    @Caching(evict = {
+        @CacheEvict(value = "alerts", allEntries = true),
+        @CacheEvict(value = "alertsByStatus", allEntries = true),
+        @CacheEvict(value = "alertsByBus", allEntries = true),
+        @CacheEvict(value = "alertsByUser", allEntries = true)
+    })
+    public Alert addFileToAlert(Long alertId, String filePath) {
+         if (alertId == null) {
+        throw new IllegalArgumentException("ID алерта не может быть null");
     }
+        Alert alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new AlertNotFoundException(alertId));
+        alert.setImgPath(filePath);
+        return alertRepository.save(alert);
+    }
+
+ 
+
 }

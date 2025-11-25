@@ -27,8 +27,14 @@ public interface AlertService {
     @Transactional
     @CacheEvict(value = {"alerts","alert"}, allEntries = true)
     Alert updateStatus(Long alertId, StatusType newStatus);
+
+    @Transactional
+    @CacheEvict(value = {"alerts", "alert"}, allEntries = true)
+    Alert assignToUser(Long alertId, Long userId);
     
     @Transactional
     @CacheEvict(value = {"alerts","alert"}, allEntries = true)
     void deleteById(Long id);
+
+    Alert addFileToAlert(Long alertId, String filePath);
 }

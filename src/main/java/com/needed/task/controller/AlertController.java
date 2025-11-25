@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.needed.task.enums.StatusType;
 import com.needed.task.model.Alert;
@@ -24,14 +26,15 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/alerts")
-public class MainController {
+public class AlertController {
     private final CachedAlertService alertService;
-    public MainController (CachedAlertService alertService)
+    public AlertController (CachedAlertService alertService)
     {
         this.alertService= alertService;
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MANAGER')")
     private List<Alert> getAllAlerts(@RequestParam(required = false) StatusType status)
     {
         if (status != null) 
@@ -42,6 +45,7 @@ public class MainController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MANAGER')")
     public ResponseEntity<Alert> getById(@PathVariable Long id) 
     {
         return alertService.findById(id)
@@ -55,6 +59,11 @@ public class MainController {
         return alertService.findByBusId(busId);
     }
 
+    @GetMapping("/user/{userId}")
+    public List<Alert> getAlertsByUser(@PathVariable Long userId) {
+        return alertService.findByAssignedToUserId(userId);
+    }
+
     @PostMapping
     public ResponseEntity<?> createAlert(@RequestBody @Valid Alert alert, BindingResult result) 
     {
@@ -66,8 +75,13 @@ public class MainController {
             return ResponseEntity.badRequest().body(errors);
         }
         Alert createdAlert= alertService.create(alert);
-        return ResponseEntity.created(URI.create("/api/alerts/" + createdAlert.getId()))
-        .body(createdAlert);
+        //Безопасное создание URI
+        URI location = ServletUriComponentsBuilder
+        .fromCurrentRequest()
+        .path("/{id}")
+        .buildAndExpand(createdAlert.getId())
+        .toUri();
+        return ResponseEntity.created(location).body(createdAlert);
     }
 
     @GetMapping("/{id}/status")
@@ -102,6 +116,6 @@ public class MainController {
     @PostMapping("/cache/clear")
     public ResponseEntity<String> clearCache() {
         alertService.clearAllCache();
-        return ResponseEntity.ok("Кеш успешно очищен");
+        return ResponseEntity.ok("Сache successfully cleared");
     }
 }
