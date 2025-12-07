@@ -38,6 +38,7 @@ public class TaskApplication  {
 				Role userRole = new Role();
 				userRole.setName("USER");
 				
+				@SuppressWarnings("null")
 				List<Role> savedRoles = roleRepository.saveAll(List.of(adminRole, managerRole, userRole));
 				System.out.println("Roles created: " + savedRoles.size());
 				
@@ -57,6 +58,7 @@ public class TaskApplication  {
 				user.setPassword(passwordEncoder.encode("user123"));
 				user.setRole(userRole);
 				
+				@SuppressWarnings("null")
 				List<User> savedUsers = userRepository.saveAll(List.of(admin, manager, user));
 				System.out.println("Users created: " + savedUsers.size());
 				

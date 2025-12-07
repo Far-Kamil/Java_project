@@ -63,8 +63,7 @@ public class SecurityConfig {
                     "/",
                     "/index.html",
                     "/app.js", 
-                    "/style.css",
-                    "/favicon.ico"
+                    "/style.css"
                 ).permitAll();
                 
 

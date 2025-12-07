@@ -45,6 +45,9 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public UserDTO getUserById(Long userId) {
+        if (userId == null) {
+        throw new IllegalArgumentException("ID пользователя не может быть null");
+        }
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new AppException(HttpStatus.NOT_FOUND, "User not found")
         );
@@ -59,6 +62,9 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public UserDTO updateUser(Long userId, UserDTO userDto) {
+        if (userId == null) {
+        throw new IllegalArgumentException("ID пользователя не может быть null");
+        }
         // get user from db
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new AppException(HttpStatus.NOT_FOUND, "User not found")
@@ -77,6 +83,9 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public String deleteUser(Long userId) {
+        if (userId == null) {
+        throw new IllegalArgumentException("ID пользователя не может быть null");
+        }
         // get user from db
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new AppException(HttpStatus.NOT_FOUND, "User not found")

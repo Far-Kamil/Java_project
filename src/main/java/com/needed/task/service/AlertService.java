@@ -21,7 +21,7 @@ public interface AlertService {
     Optional <Alert> findById(Long id);
 
     @Transactional
-    @CacheEvict(value = {"allerts"}, allEntries = true)
+    @CacheEvict(value = {"alerts"}, allEntries = true)
     Alert create(Alert alert);
 
     @Transactional
