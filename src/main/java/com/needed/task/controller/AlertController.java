@@ -54,6 +54,7 @@ public class AlertController {
     }
 
     @GetMapping("/bus/{busId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MANAGER')")
     public List<Alert> getAlertsByBus(@PathVariable Long busId) 
     {
         return alertService.findByBusId(busId);
@@ -65,6 +66,7 @@ public class AlertController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<?> createAlert(@RequestBody @Valid Alert alert, BindingResult result) 
     {
         if(result.hasErrors())
@@ -85,6 +87,7 @@ public class AlertController {
     }
 
     @GetMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity <Alert> updateStatus(@PathVariable Long id, 
     @RequestParam StatusType status)
     {
@@ -99,6 +102,7 @@ public class AlertController {
         }  
     }    
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity <Void> deleteAlert(@PathVariable Long id)
     {
         try 
@@ -114,6 +118,7 @@ public class AlertController {
     
     // Endpoint for cache management (for administration)
     @PostMapping("/cache/clear")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> clearCache() {
         alertService.clearAllCache();
         return ResponseEntity.ok("Сache successfully cleared");

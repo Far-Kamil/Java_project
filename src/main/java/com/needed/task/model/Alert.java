@@ -3,11 +3,8 @@ package com.needed.task.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-
 import com.needed.task.enums.EventType;
 import com.needed.task.enums.StatusType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,7 +29,9 @@ public class Alert {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-    private Bus bus;
+    @NotNull(message = "Bus ID не может быть пустым")
+    @Column(name = "bus_id", nullable = false)
+    private Long busId;
     @NotNull(message = "Type of incident is required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -50,7 +49,6 @@ public class Alert {
     String imgPath;
     private List <String> photoUrls;
     private User assignedTo;
-
 }
 
 

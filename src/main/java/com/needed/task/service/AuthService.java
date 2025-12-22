@@ -1,11 +1,13 @@
 package com.needed.task.service;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.needed.task.dto.LoginRequest;
 import com.needed.task.dto.LoginResponse;
 import com.needed.task.dto.UserLoggedDto;
 
+@Service
 public interface AuthService {
     ResponseEntity<LoginResponse> login(LoginRequest loginRequest, String accessToken, String refreshToken);
 

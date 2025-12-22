@@ -1,8 +1,12 @@
 package com.needed.task.service;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.needed.task.dto.UserDTO;
 
+@Service
 public interface UserService {
     List<UserDTO> getAllUsers();
     UserDTO getUserById(Long id);

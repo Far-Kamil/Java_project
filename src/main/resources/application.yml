@@ -1,6 +1,6 @@
 spring:
     config:
-        import: optional:secret.properties
+        import: optional:classpath:secret.properties
     application:
         name: AlertProject
     web:
@@ -31,6 +31,7 @@ logging:
     pattern:
         console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
 server:
+    port: 8181
     servlet:
         multipart:
             enabled: true

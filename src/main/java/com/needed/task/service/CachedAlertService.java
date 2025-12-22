@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,7 @@ import com.needed.task.enums.StatusType;
 import com.needed.task.exception.AlertNotFoundException;
 import com.needed.task.model.Alert;
 import com.needed.task.repository.AlertRepository;
+import com.needed.task.specification.AlertSpecification;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -21,6 +24,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Service
 @Transactional
+@Primary // этот бин будет использоваться "по умолчанию"
 public class CachedAlertService implements AlertService{
     private final AlertRepository alertRepository;
     public CachedAlertService(AlertRepository alertRepository)
@@ -165,6 +169,11 @@ public class CachedAlertService implements AlertService{
                 .orElseThrow(() -> new AlertNotFoundException(alertId));
         alert.setImgPath(filePath);
         return alertRepository.save(alert);
+    }
+    @Transactional(readOnly = true)
+    public List<Alert> findByFilters(StatusType status, Long busId, String location) {
+        Specification<Alert> spec = AlertSpecification.filter(status, busId, location);
+        return alertRepository.findAll(spec);
     }
 
  
